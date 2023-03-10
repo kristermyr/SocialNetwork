@@ -23,11 +23,11 @@ const ThoughtSchema = new Schema(
         required: true,
 
       },
-    //   reactions: {
-    //     type: String,
-    //     required: true,
-    //   },
-    //   reactions: [ReactionSchema],
+      reactions: {
+        type: String,
+        required: true,
+      },
+    //  reactions: [reactionSchema],
     },
     {
       toJSON: {
@@ -41,6 +41,26 @@ const ThoughtSchema = new Schema(
 // thoughtSchema.virtual('friendCount').
 // get(function() { return this.friends.length
 // });
+const reactionSchema = new Schema({
+
+    reactionId: {
+    type: Schema.Types.ObjectId,
+    default: () => new Types.ObjectId()
+    },
+    
+    reactionBody: {
+    type: String,
+    required: true,
+    maxlength: 280
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        //getter method
+    },
+
+})
+
 
   const Thought = model('Thought', ThoughtSchema);
   

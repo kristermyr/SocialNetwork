@@ -26,9 +26,9 @@ module.exports = {
   },
   // Delete a user and associated apps
   deleteThought(req, res) {
-    Thought.findOneAndRemove({ _id: req.params.thoughtId })
-      .then((thought) =>
-        !thought
+    Thought.findOneAndRemove({ _id: req.params.id })
+      .then((thoughtData) 
+      
            ? res.status(404).json({ message: 'No thought with that ID' })
            : User.findOneAndUpdate(
             {_id: body.userId},
