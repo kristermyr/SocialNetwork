@@ -1,4 +1,4 @@
-const { User, Thought } = require('../models');
+const { User, Thought } = require("../models");
 
 module.exports = {
   // Get all thoughts
@@ -10,10 +10,10 @@ module.exports = {
   // Get a single thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.id })
-      .select('-__v')
+      .select("-__v")
       .then((thoughtData) =>
         !thoughtData
-          ? res.status(404).json({ message: 'No thought with that ID' })
+          ? res.status(404).json({ message: "No thought with that ID" })
           : res.json(thoughtData)
       )
       .catch((err) => res.status(500).json(err));
@@ -25,9 +25,8 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
 
-
-   // Update a thought
-   updateThought(req, res) {
+  // Update a thought
+  updateThought(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.id },
       { $set: req.body },
@@ -35,7 +34,7 @@ module.exports = {
     )
       .then((thought) =>
         !thought
-          ? res.status(404).json({ message: 'No thought with this id!' })
+          ? res.status(404).json({ message: "No thought with this id!" })
           : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
@@ -44,26 +43,26 @@ module.exports = {
   // Delete a thought
   deleteThought(req, res) {
     Thought.findOneAndRemove({ _id: req.params.id })
-        .then((thought) =>
-        !thought
-          ? res.status(404).json({ message: 'No thought with this id!' })
-          : Thought.findOneAndUpdate (
-      { thoughts: req.params.id},      
-      { $pull:{thoughts:req.params.id} },
-      { new: true }
-    )
-        )
-        .then((User) =>
+      .then((thought) => {
+        if (!thought) {
+          return res.status(404).json({ message: "No thought with this id!" });
+        } else 
+          return User.findOneAndUpdate(
+            { _id: req.params.id },
+            { $pull: { thoughts: req.params.id } },
+            { new: true }
+          );
+      })
+      .then((User) =>
         !User
-            ? res.status(404).json({
-                message: "thought deleted, but no user found",
+          ? res.status(404).json({
+              message: "thought deleted, but no user found",
             })
-            :res.json({ message:"Thought has been deleted!"})
-            )
-            .catch((err) => {
-                console.log(err);
-                res.status(500).json(err);
-            });
-        
-        },
+          : res.json({ message: "Thought has been deleted!" })
+      )
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  },
 };
