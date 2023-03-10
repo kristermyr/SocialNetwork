@@ -50,10 +50,10 @@ module.exports = {
   },
   
   // Adds a tag to an application. This method is unique in that we add the entire body of the tag rather than the ID with the mongodb $addToSet operator.
-  addFriend(params, res) {
+  addFriend(req, res) {
     User.findOneAndUpdate(
-      { _id: params.userId },
-      { $addToSet: { friends: params.friendId } },
+      { _id: req.params.userId },
+      { $addToSet: { friends: req.params.friendId } },
       { runValidators: true, new: true }
     )
       .then((friend) =>
@@ -64,19 +64,15 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   // Remove application tag. This method finds the application based on ID. It then updates the tags array associated with the app in question by removing it's tagId from the tags array.
-  removeFriend(params, res) {
+  removeFriend({ params }, res) {
     User.findOneAndUpdate(
-      { _id: params.userdId },
-      { $pull: { friends: params.friendId } },
-      { new: true }
+        { _id: params.userId },
+        { $pull: { friends: params.friendId } },
+        { new: true }
     )
-      .then((friend) =>
-        !friend
-          ? res.status(404).json({ message: 'No friend with this id!' })
-          : res.json(friend)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
+        .then(UserData => res.json(UserData))
+        .catch(err => res.json(err));
+}
 };
 
 
