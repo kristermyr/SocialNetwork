@@ -41,23 +41,18 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
 
-  // Delete a user and associated apps
+  // Delete a thought
   deleteThought(req, res) {
-    Thought.findOneAndRemove({ _id: req.params.id })
+    Thought.findOneAndRemove(
+      { _id: req.params.id },
+      { $pull:{thoughts:req.params.id} },
+      { runValidators: true, new: true }
+    )
       .then((thought) =>
         !thought
-           ? res.status(404).json({ message: 'No thought with that ID' })
-           : User.findOneAndUpdate(
-            {_id: body.userId},
-            {$pull: {thoughts: params.id}},
-            {new: true}
-           )
-        )
-          
-      .then(() => res.json({ message: 'Thoughts deleted!' }))
-         .catch((err) => {
-        console.error(err);
-        res.status(500).json(err);
-      });
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
   },
 };
