@@ -24,11 +24,28 @@ module.exports = {
       .then((user) => res.json(user))
       .catch((err) => res.status(500).json(err));
   },
+
+
+   // Update a thought
+   updateThought(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: 'No thought with this id!' })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+
   // Delete a user and associated apps
   deleteThought(req, res) {
     Thought.findOneAndRemove({ _id: req.params.id })
-      .then((thoughtData) 
-      
+      .then((thought) =>
+        !thought
            ? res.status(404).json({ message: 'No thought with that ID' })
            : User.findOneAndUpdate(
             {_id: body.userId},
@@ -37,7 +54,10 @@ module.exports = {
            )
         )
           
-      .then(() => res.json({ message: 'Thought deleted!' }))
-      .catch((err) => res.status(500).json(err));
+      .then(() => res.json({ message: 'Thoughts deleted!' }))
+         .catch((err) => {
+        console.error(err);
+        res.status(500).json(err);
+      });
   },
 };
