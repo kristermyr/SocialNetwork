@@ -43,16 +43,27 @@ module.exports = {
 
   // Delete a thought
   deleteThought(req, res) {
-    Thought.findOneAndRemove(
-      { _id: req.params.id },
-      { $pull:{thoughts:req.params.id} },
-      { runValidators: true, new: true }
-    )
-      .then((thought) =>
+    Thought.findOneAndRemove({ _id: req.params.id })
+        .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No thought with this id!' })
-          : res.json(thought)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
+          : Thought.findOneAndUpdate (
+      { thoughts: req.params.id},      
+      { $pull:{thoughts:req.params.id} },
+      { new: true }
+    )
+        )
+        .then((User) =>
+        !User
+            ? res.status(404).json({
+                message: "thought deleted, but no user found",
+            })
+            :res.json({ message:"Thought has been deleted!"})
+            )
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+        
+        },
 };
