@@ -46,13 +46,13 @@ module.exports = {
       .then((thought) => {
         if (!thought) {
           return res.status(404).json({ message: "No thought with this id!" });
-        } else 
+        } else {
           return User.findOneAndUpdate(
-            { _id: req.params.id },
+            { thoughts: req.params.thoughtId },
             { $pull: { thoughts: req.params.id } },
             { new: true }
           );
-      })
+   } })
       .then((User) =>
         !User
           ? res.status(404).json({
