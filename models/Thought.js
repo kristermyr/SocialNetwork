@@ -1,4 +1,6 @@
 const { Schema, model } = require('mongoose');
+const dateFormerter = require("../utils/fomatDate");
+
 const reactionSchema = new Schema({
 
     reactionId: {
@@ -14,7 +16,7 @@ const reactionSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        //getter method
+        get: timestamp => dateFormerter(timestamp)
     },
 
 })
@@ -30,6 +32,7 @@ const ThoughtSchema = new Schema(
       createdAt: {
         type: Date,
         default: Date.now,
+        get: timestamp => dateFormerter(timestamp)
         
       },
       thoughts: {

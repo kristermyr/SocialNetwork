@@ -65,4 +65,26 @@ module.exports = {
         res.status(500).json(err);
       });
   },
+
+  createReaction(req, res) {
+    Thought.create(req.body)
+      .then((reaction) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $addToSet: { reaction: reaction._id } },
+          { new: true }
+        );
+      })
+      .then((user) =>
+        !user
+          ? res.status(404).json({
+              message: "reaction created, but found no user with that ID",
+            })
+          : res.json("Reaction Created 🎉")
+      )
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
+  },
 };
