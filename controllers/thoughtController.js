@@ -21,8 +21,24 @@ module.exports = {
   // create a new thought
   createThought(req, res) {
     Thought.create(req.body)
-      .then((user) => res.json(user))
-      .catch((err) => res.status(500).json(err));
+      .then((thought) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $push: { thoughts: thought._id } },
+          { new: true }
+        );
+      })
+      .then((user) =>
+        !user
+          ? res.status(404).json({
+              message: "thought created, but found no user with that ID",
+            })
+          : res.json("Thought Created 🎉")
+      )
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
 
   // Update a thought
@@ -67,24 +83,29 @@ module.exports = {
   },
 
   createReaction(req, res) {
-    Thought.create(req.body)
-      .then((reaction) => {
-        return User.findOneAndUpdate(
-          { _id: req.body.userId },
-          { $addToSet: { reaction: reaction._id } },
-          { new: true }
-        );
-      })
-      .then((user) =>
-        !user
-          ? res.status(404).json({
-              message: "reaction created, but found no user with that ID",
-            })
-          : res.json("Reaction Created 🎉")
+    Thought.findOneAndUpdate(
+      { _id: req.params.id },
+      { $addToSet: { reactions: req.body } },
+      {new: true }
+    )
+      .then((reaction) =>
+        !reaction
+          ? res.status(404).json({ message: "No thought with this id!" })
+          : res.json(reaction)
       )
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      });
+      .catch((err) => res.status(500).json(err));
+  },
+  deleteReaction(req, res) {
+    Thought.findOneAndRemove(
+      { _id: req.params.id },
+      { $pull: { reactions: req.params.id } },
+      { new: true }
+    )
+      .then((reaction) =>
+        !reaction
+          ? res.status(404).json({ message: "No thought with this id!" })
+          : res.json(reaction)
+      )
+      .catch((err) => res.status(500).json(err));
   },
 };
